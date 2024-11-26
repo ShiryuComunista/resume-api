@@ -4,7 +4,7 @@ const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: 'https://flaviocosta-eng.vercel.app/' })); 
 app.use(express.json());
 
 const supabase = createClient(
