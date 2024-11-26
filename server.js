@@ -1,10 +1,25 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { createClient } = require("@supabase/supabase-js");
 
+const allowedOrigins = [
+  "http://localhost:3000", // Local development
+  "https://flaviocosta-eng.vercel.app", // Deployed site
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+
 const app = express();
-app.use(cors({ origin: 'https://flaviocosta-eng.vercel.app/' })); 
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const supabase = createClient(
@@ -23,13 +38,11 @@ app.post("/increment", async (req, res) => {
     return res.json({ count: 1 });
   }
 
-  const newCount = data.count + 1
+  const newCount = data.count + 1;
 
-  await supabase
-  .from('visitors')
-  .update({ count: newCount});
+  await supabase.from("visitors").update({ count: newCount });
 
-  res.json({ count: newCount});
+  res.json({ count: newCount });
 });
 
 const PORT = process.env.PORT || 5000;
